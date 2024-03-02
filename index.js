@@ -7,7 +7,7 @@ const svg = document.getElementById('svg');
 const img = new Image();
 const progress = document.getElementById('progressbar');
 const progressregion = document.getElementById('progressregion');
-let mode = 'spline', clustering_mode = 'color', clustering_hierarchical = 'stacked';
+let mode = 'spline', clustering_mode = 'color', clustering_hierarchical = 'cutout';
 
 // Hide canas and svg on load
 canvas.style.display = 'none';
@@ -45,115 +45,6 @@ document.getElementById('export').addEventListener('click', function (e) {
     this.download = 'export-' + new Date().toISOString().slice(0, 19).replace(/:/g, '').replace('T', ' ') + '.svg';
 });
 
-// Store template config
-var presetConfigs = [
-    {
-        src: 'assets/samples/K1_drawing.jpg',
-        clustering_mode: 'binary',
-        clustering_hierarchical: 'stacked',
-        filter_speckle: 4,
-        color_precision: 6,
-        path_precision: 8,
-        layer_difference: 16,
-        mode: 'spline',
-        corner_threshold: 60,
-        length_threshold: 4,
-        splice_threshold: 45,
-        source: 'https://commons.wikimedia.org/wiki/File:K1_drawing.jpg',
-        credit: '<a href="https://commons.wikimedia.org/">Wikimedia</a>',
-    },
-    {
-        src: 'assets/samples/Cityscape Sunset_DFM3-01.jpg',
-        clustering_mode: 'color',
-        clustering_hierarchical: 'stacked',
-        filter_speckle: 4,
-        color_precision: 8,
-        path_precision: 8,
-        layer_difference: 25,
-        mode: 'spline',
-        corner_threshold: 60,
-        length_threshold: 4,
-        splice_threshold: 45,
-        source: 'https://www.vecteezy.com/vector-art/227400-beautiful-cityscape-at-sunset',
-        credit: '<a href="https://www.vecteezy.com/free-vector/building">Building Vectors by Vecteezy</a>',
-    },
-    {
-        src: 'assets/samples/Gum Tree Vector.jpg',
-        clustering_mode: 'color',
-        clustering_hierarchical: 'stacked',
-        filter_speckle: 4,
-        color_precision: 8,
-        path_precision: 8,
-        layer_difference: 28,
-        mode: 'spline',
-        corner_threshold: 60,
-        length_threshold: 4,
-        splice_threshold: 45,
-        source: 'https://www.vecteezy.com/vector-art/172177-gum-tree-vector',
-        credit: '<a href="https://www.vecteezy.com/free-vector/nature">Nature Vectors by Vecteezy</a>',
-    },
-    {
-        src: 'assets/samples/vectorstock_31191940.png',
-        clustering_mode: 'color',
-        clustering_hierarchical: 'stacked',
-        filter_speckle: 8,
-        color_precision: 7,
-        path_precision: 8,
-        layer_difference: 64,
-        mode: 'spline',
-        corner_threshold: 60,
-        length_threshold: 4,
-        splice_threshold: 45,
-        source: 'https://www.vectorstock.com/royalty-free-vector/dessert-poster-design-with-chocolate-cake-mousses-vector-31191940',
-        credit: '<a href="https://www.vectorstock.com/royalty-free-vector/dessert-poster-design-with-chocolate-cake-mousses-vector-31191940">Vector image by VectorStock / vectorstock</a>',
-    },
-    {
-        src: 'assets/samples/angel-luciano-LATYeZyw88c-unsplash-s.jpg',
-        clustering_mode: 'color',
-        clustering_hierarchical: 'stacked',
-        filter_speckle: 10,
-        color_precision: 8,
-        path_precision: 8,
-        layer_difference: 48,
-        mode: 'spline',
-        corner_threshold: 180,
-        length_threshold: 4,
-        splice_threshold: 45,
-        source: 'https://unsplash.com/photos/LATYeZyw88c',
-        credit: '<span>Photo by <a href="https://unsplash.com/@roaming_angel?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Angel Luciano</a> on <a href="https://unsplash.com/s/photos/dog?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>',
-    },
-    {
-        src: 'assets/samples/tank-unit-preview.png',
-        clustering_mode: 'color',
-        clustering_hierarchical: 'stacked',
-        filter_speckle: 0,
-        color_precision: 8,
-        path_precision: 8,
-        layer_difference: 0,
-        mode: 'none',
-        corner_threshold: 180,
-        length_threshold: 4,
-        splice_threshold: 45,
-        source: 'https://opengameart.org/content/sideview-sci-fi-patreon-collection',
-        credit: '<span>Artwork by <a href="https://opengameart.org/content/sideview-sci-fi-patreon-collection">Luis Zuno</a> on <a href="https://opengameart.org/">opengameart.org</a></span>',
-    },
-];
-
-// Insert gallery items dynamically
-if (document.getElementById('galleryslider')) {
-    for (let i = 0; i < presetConfigs.length; i++) {
-        document.getElementById('galleryslider').innerHTML += 
-        `<li>
-        <div class="galleryitem uk-panel uk-flex uk-flex-center">
-            <a href="#">
-                <img src="${presetConfigs[i].src}" title="${presetConfigs[i].source}">
-            </a>
-        </div>
-        </li>`;
-        document.getElementById('credits-modal-content').innerHTML += 
-        `<p>${presetConfigs[i].credit}</p>`;
-    }
-}
 
 // Function to load a given config WITHOUT restarting
 function loadConfig(config) {
@@ -190,20 +81,7 @@ function loadConfig(config) {
     document.getElementById('pathprecision').value = globalpathprecision;
 }
 
-// Choose template from gallery
-let chooseGalleryButtons = document.querySelectorAll('.galleryitem a');
-chooseGalleryButtons.forEach(item => {
-    item.addEventListener('click', function (e) {
-        // Load preset template config
-        let i = Array.prototype.indexOf.call(chooseGalleryButtons, item);
-        if (presetConfigs.length > i) {
-            loadConfig(presetConfigs[i]);
-        }
 
-        // Set source as specified
-        setSourceAndRestart(this.firstElementChild.src);
-    });
-});
 
 // Upload button
 var imageSelect = document.getElementById('imageSelect'),
@@ -346,7 +224,8 @@ document.getElementById('pathprecision').addEventListener('change', function (e)
 });
 
 // Save inputs before unloading
-/*
+
+
 window.addEventListener('beforeunload', function () {
     localStorage.VSsettings = JSON.stringify({
         globalcorner: globalcorner,
@@ -354,14 +233,15 @@ window.addEventListener('beforeunload', function () {
         globalsplice: globalsplice,
     });
 });
-*/
+
 
 function setSourceAndRestart(source) {
     img.src = source instanceof File ? URL.createObjectURL(source) : source;
     img.onload = function () {
         const width = img.naturalWidth, height = img.naturalHeight;
         svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-        drop.style.height = height;
+
+        drop.style.height = height;     
         canvas.width = img.naturalWidth;
         canvas.height = img.naturalHeight;
         if (height > width) {
@@ -412,6 +292,7 @@ function restart() {
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0);
+    console.log(img)
     let converter_params = JSON.stringify({
         'canvas_id': canvas.id,
         'svg_id': svg.id,
@@ -473,13 +354,17 @@ class ConverterRunner {
                 progress.value = This.converter.progress();
                 if (progress.value >= 50) {
                     canvas.style.display = 'none';
+                    console.log(progress.value)
+
                 } else {
                     canvas.style.opacity = (50 - progress.value) / 25;
+
                 }
                 if (progress.value >= progress.max) {
                     progressregion.style.display = 'none';
                     progress.style.marginBottom = '20px';
                     progress.value = 0;
+
                 }
                 if (!done) {
                     setTimeout(tick, 1);
